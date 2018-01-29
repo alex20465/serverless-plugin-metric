@@ -1,0 +1,19 @@
+{
+  "name": "serverless-plugin-metric",
+  "version": "1.0.0",
+  "description": "Simplified way to create AWSL:Logs:MetricFilter resources using custom pattern-filter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aws",
+    "serverless",
+    "logging",
+    "metric",
+    "stats",
+    "plugin"
+  ],
+  "author": "Alexandros Fotiadis <fotiadis90@gmail.com>",
+  "license": "ISC"
+}
