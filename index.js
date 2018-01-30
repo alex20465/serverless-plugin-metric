@@ -127,7 +127,7 @@ class MetricPlugin {
     createAWSMetricResource(functionName, metricOptions) {
         const { name, namespace, pattern } = metricOptions;
         const logGroupName = `/aws/lambda/${this.service}-${this.stage}-${functionName}`;
-        const dynamicNamespace = `CustomMetrics/${this.service}`;
+        const dynamicNamespace = `${this.service}/${this.stage}`;
 
         /**
          * @type {AWSMetricFilterResource}
