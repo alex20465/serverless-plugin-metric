@@ -1,4 +1,6 @@
 
+const camelcase = require('camelcase');
+
 /**
  * ABSTRACT PLUGIN TYPE DEFINITIONS
  * 
@@ -135,6 +137,7 @@ class MetricPlugin {
         const resource = {
             __metricOption: metricOptions,
             Type: 'AWS::Logs::MetricFilter',
+            DependsOn: `${camelcase(functionName)}LogGroup`,
             Properties: {
                 FilterPattern: pattern,
                 LogGroupName: logGroupName,
