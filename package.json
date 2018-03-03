@@ -21,6 +21,6 @@
   "author": "Alexandros Fotiadis <fotiadis90@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "camelcase": "^4.1.0"
+    "pascalcase": "^0.1.1"
   }
 }

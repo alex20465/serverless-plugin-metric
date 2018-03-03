@@ -1,5 +1,5 @@
 
-const camelcase = require('camelcase');
+const pascalcase = require('pascalcase');
 
 /**
  * ABSTRACT PLUGIN TYPE DEFINITIONS
@@ -137,7 +137,7 @@ class MetricPlugin {
         const resource = {
             __metricOption: metricOptions,
             Type: 'AWS::Logs::MetricFilter',
-            DependsOn: `${functionName}LogGroup`,
+            DependsOn: `${pascalcase(functionName)}LogGroup`,
             Properties: {
                 FilterPattern: pattern,
                 LogGroupName: logGroupName,
