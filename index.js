@@ -79,7 +79,7 @@ class MetricPlugin {
         this.functions = serverless.service.getAllFunctions();
 
         this.hooks = {
-            'before:deploy:deploy': this.handler.bind(this)
+            'package:compileEvents': this.handler.bind(this)
         }
     }
 
