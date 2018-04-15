@@ -1,5 +1,5 @@
 
-const camelcase = require('camelcase');
+const pascalcase = require('pascalcase');
 
 /**
  * ABSTRACT PLUGIN TYPE DEFINITIONS
@@ -79,7 +79,7 @@ class MetricPlugin {
         this.functions = serverless.service.getAllFunctions();
 
         this.hooks = {
-            'before:deploy:deploy': this.handler.bind(this)
+            'package:compileEvents': this.handler.bind(this)
         }
     }
 
@@ -137,7 +137,7 @@ class MetricPlugin {
         const resource = {
             __metricOption: metricOptions,
             Type: 'AWS::Logs::MetricFilter',
-            DependsOn: `${camelcase(functionName)}LogGroup`,
+            DependsOn: `${pascalcase(functionName)}LogGroup`,
             Properties: {
                 FilterPattern: pattern,
                 LogGroupName: logGroupName,
