@@ -9,6 +9,7 @@ const pascalcase = require('pascalcase');
  * @property {string} pattern           Filter patter doc (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html)
  * @property {string[]} [functions]     Default: ALL
  * @property {string} [namespace]       Override dynamic generated namespace (default: CustomMetrics/<serviceName>)
+ * @property {string} [value]           The value to apply to each occurence
  */
 
 /**
@@ -127,7 +128,7 @@ class MetricPlugin {
      * @returns {AWSMetricFilterResource}
      */
     createAWSMetricResource(functionName, metricOptions) {
-        const { name, namespace, pattern } = metricOptions;
+        const { name, namespace, pattern, value = '1' } = metricOptions;
         const logGroupName = `/aws/lambda/${this.service}-${this.stage}-${functionName}`;
         const dynamicNamespace = `${this.service}/${this.stage}`;
 
@@ -145,7 +146,7 @@ class MetricPlugin {
                     {
                         MetricName: `${functionName}-${name}`,
                         MetricNamespace: namespace || dynamicNamespace,
-                        MetricValue: '1'
+                        MetricValue: value
                     }
                 ]
             }
