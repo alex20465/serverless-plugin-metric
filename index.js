@@ -53,11 +53,6 @@ class MetricPlugin {
         /**
          * @type {string}
          */
-        this.stage = options.stage;
-
-        /**
-         * @type {string}
-         */
         this.service = serverless.service.service;
 
         /**
@@ -69,6 +64,11 @@ class MetricPlugin {
          * @type {object}
          */
         this.provider = serverless.getProvider('aws');
+
+        /**
+         * @type {string}
+         */
+        this.stage = this.provider.getStage();
 
         /**
          * @type {MetricOption[]}
