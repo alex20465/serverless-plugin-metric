@@ -1,6 +1,4 @@
 
-const pascalcase = require('pascalcase');
-
 /**
  * ABSTRACT PLUGIN TYPE DEFINITIONS
  * 
@@ -55,17 +53,22 @@ class MetricPlugin {
         /**
          * @type {string}
          */
-        this.stage = options.stage;
-
-        /**
-         * @type {string}
-         */
         this.service = serverless.service.service;
 
         /**
          * @type {object}
          */
         this.serverless = serverless;
+
+        /**
+         * @type {object}
+         */
+        this.provider = serverless.getProvider('aws');
+
+        /**
+         * @type {string}
+         */
+        this.stage = this.provider.getStage();
 
         /**
          * @type {MetricOption[]}
@@ -138,7 +141,7 @@ class MetricPlugin {
         const resource = {
             __metricOption: metricOptions,
             Type: 'AWS::Logs::MetricFilter',
-            DependsOn: `${pascalcase(functionName)}LogGroup`,
+            DependsOn: this.provider.naming.getLogGroupLogicalId(functionName),
             Properties: {
                 FilterPattern: pattern,
                 LogGroupName: logGroupName,
@@ -165,7 +168,8 @@ class MetricPlugin {
         if (!this.serverless.service.provider.compiledCloudFormationTemplate.Resources) {
             this.serverless.service.provider.compiledCloudFormationTemplate.Resources = {};
         }
-        this.serverless.service.provider.compiledCloudFormationTemplate.Resources[name] = resource;
+        const normalizedName = this.provider.naming.normalizeNameToAlphaNumericOnly(name);
+        this.serverless.service.provider.compiledCloudFormationTemplate.Resources[normalizedName] = resource;
     }
 }
 
