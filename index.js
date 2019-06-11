@@ -66,11 +66,6 @@ class MetricPlugin {
         this.provider = serverless.getProvider('aws');
 
         /**
-         * @type {string}
-         */
-        this.stage = this.provider.getStage();
-
-        /**
          * @type {MetricOption[]}
          */
         this.metricOptions = serverless.service.custom && serverless.service.custom.metrics
@@ -132,8 +127,9 @@ class MetricPlugin {
      */
     createAWSMetricResource(functionName, metricOptions) {
         const { name, namespace, pattern, value = '1' } = metricOptions;
-        const logGroupName = `/aws/lambda/${this.service}-${this.stage}-${functionName}`;
-        const dynamicNamespace = `${this.service}/${this.stage}`;
+        const stage = this.provider.getStage();
+        const logGroupName = `/aws/lambda/${this.service}-${stage}-${functionName}`;
+        const dynamicNamespace = `${this.service}/${stage}`;
 
         /**
          * @type {AWSMetricFilterResource}
