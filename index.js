@@ -5,9 +5,11 @@
  * @typedef {object} MetricOption
  * @property {string} name              The name of the metric
  * @property {string} pattern           Filter patter doc (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html)
+ * @property {boolean} staticName       If true, metric is naming from `name`. (default: false)
  * @property {string[]} [functions]     Default: ALL
  * @property {string} [namespace]       Override dynamic generated namespace (default: CustomMetrics/<serviceName>)
- * @property {string} [value]           The value to apply to each occurence
+ * @property {string} [value]           The value to apply to each occurence (default: 1)
+ * @property {string} [defaultValue]    Default: null
  */
 
 /**
@@ -22,6 +24,7 @@
  * @property {string} MetricValue
  * @property {string} MetricNamespace
  * @property {string} MetricName
+ * @property {string} DefaultValue
  * 
  * @typedef {object} AWSMetricFilterResource
  * @property {string} Type
@@ -51,11 +54,6 @@
 class MetricPlugin {
     constructor(serverless, options) {
         /**
-         * @type {string}
-         */
-        this.service = serverless.service.service;
-
-        /**
          * @type {object}
          */
         this.serverless = serverless;
@@ -84,8 +82,14 @@ class MetricPlugin {
 
     handler() {
         /**
+         * @type {string}
+         */
+        this.dynamicNamespace = `${this.serverless.service.service}/${this.serverless.service.provider.stage}`;
+
+        /**
          * @type {AWSMetricFilterResource[]}
          */
+
         this.functions
             .map((functionName) => this.createMetricFilterResources(functionName))
             .forEach(({ functionName, resources }) => {
@@ -126,10 +130,13 @@ class MetricPlugin {
      * @returns {AWSMetricFilterResource}
      */
     createAWSMetricResource(functionName, metricOptions) {
-        const { name, namespace, pattern, value = '1' } = metricOptions;
-        const stage = this.provider.getStage();
-        const logGroupName = `/aws/lambda/${this.service}-${stage}-${functionName}`;
-        const dynamicNamespace = `${this.service}/${stage}`;
+        const { name, staticName = false, namespace, pattern, value = '1', defaultValue } = metricOptions;
+        const logGroupLogicalId = this.provider.naming.getLogGroupLogicalId(functionName);
+        const logGroup = this.serverless.service.provider.compiledCloudFormationTemplate.Resources[logGroupLogicalId];
+        const logGroupName = logGroup.Properties.LogGroupName;
+        
+        const normalizedName = this.provider.naming.normalizeName(functionName);
+
 
         /**
          * @type {AWSMetricFilterResource}
@@ -137,15 +144,16 @@ class MetricPlugin {
         const resource = {
             __metricOption: metricOptions,
             Type: 'AWS::Logs::MetricFilter',
-            DependsOn: this.provider.naming.getLogGroupLogicalId(functionName),
+            DependsOn: logGroupLogicalId,
             Properties: {
                 FilterPattern: pattern,
                 LogGroupName: logGroupName,
                 MetricTransformations: [
                     {
-                        MetricName: `${functionName}-${name}`,
+                        MetricName: (staticName) ? name : `${normalizedName}-${name}`,
                         MetricNamespace: namespace || dynamicNamespace,
-                        MetricValue: value
+                        MetricValue: value,
+                        DefaultValue: defaultValue,
                     }
                 ]
             }
