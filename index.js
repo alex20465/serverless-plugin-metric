@@ -49,7 +49,7 @@
  *       value: (optional, default: 1)
  * ```
  */
- class MetricPlugin {
+class MetricPlugin {
     constructor(serverless, options) {
         /**
          * @type {string}
