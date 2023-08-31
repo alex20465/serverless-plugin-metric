@@ -1,6 +1,6 @@
 {
   "name": "serverless-plugin-metric",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Simplified way to create AWSL:Logs:MetricFilter resources using custom pattern-filter",
   "main": "index.js",
   "scripts": {
