@@ -41,6 +41,7 @@ custom:
  * @property {string} name              The name of the metric
  * @property {string} pattern           Filter patter doc (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html)
  * @property {string[]} [functions]     Default: ALL
- * @property {string} [namespace]       Override dynamic generated namespace (default: CustomMetrics/<serviceName>)
+ * @property {string} [namespace]       Override dynamic generated namespace (default: '<serviceName>/<stageName>')
+ * @property {string} [value]           The value to apply to each occurence. (default: 1)
  */
 ```

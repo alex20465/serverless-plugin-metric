@@ -6,8 +6,8 @@
  * @property {string} name              The name of the metric
  * @property {string} pattern           Filter patter doc (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html)
  * @property {string[]} [functions]     Default: ALL
- * @property {string} [namespace]       Override dynamic generated namespace (default: CustomMetrics/<serviceName>)
- * @property {string} [value]           The value to apply to each occurence
+ * @property {string} [namespace]       Override dynamic generated namespace (default: '<serviceName>/<stageName>')
+ * @property {string} [value]           The value to apply to each occurence. (default: 1)
  */
 
 /**
@@ -34,7 +34,7 @@
  * under the serverless.yml location `custom.metrics`.
  * 
  * By default the plugin applies the metric resources to all functions, except
- * specific function-names are provided (`MetricOptions.functions`).
+ * when specific function-names are provided (`MetricOptions.functions`).
  * 
  * OPTION EXAMPLE:
  * 
@@ -43,9 +43,10 @@
  *   metrics:
  *     - name: foo
  *       pattern: "{ $.statusCode != 200 }"
- *       functions:  (optional, default: ALL)
+ *       functions: (optional, default: ALL)
  *         - getBar
- *       namespace: "custom/metric" (optional, default: 'CustomMetrics/<serviceName>')
+ *       namespace: "custom/metric" (optional, default: '<serviceName>/<stageName>')
+ *       value: (optional, default: 1)
  * ```
  */
 class MetricPlugin {
@@ -75,7 +76,7 @@ class MetricPlugin {
         /**
          * @type {string}
          */
-        this.functions = serverless.service.getAllFunctions();
+        this.functions = this.getAllFunctions();
 
         this.hooks = {
             'package:compileEvents': this.handler.bind(this)
@@ -98,6 +99,21 @@ class MetricPlugin {
                     this.registerResource(resourceName, resource);
                 })
             });
+    }
+
+    /**
+     * Get all the function names including support for an array of function files
+     * @param {array|object} functions 
+     * @returns {string[]}
+     */
+    getAllFunctions() {
+        if (Array.isArray(this.serverless.service.functions)) {
+            return this.serverless.service.functions.reduce((allFunctions, functionObject) => {
+                return [...allFunctions, ...Object.keys(functionObject)];
+            }, []);
+        } else {
+            return this.serverless.service.getAllFunctions();
+        }
     }
 
     /**
