@@ -45,3 +45,5 @@ custom:
  * @property {string} [value]           The value to apply to each occurence. (default: 1)
  */
 ```
+
+Built and maintained by [Techthos](https://www.techthos.net).
